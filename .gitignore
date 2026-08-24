@@ -1,0 +1,40 @@
+node_modules/
+
+# Build output
+dist/
+build/
+.output/
+.astro/
+coverage/
+public/assets/icons/simple-icons/
+public/og.png
+public/qr.png
+public/contact.vcf
+
+# Cloudflare local state
+.wrangler/
+.mf/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+
+# Development
+qa-screenshots/
+test-results/
+playwright-report/
+
+# IDE files
+.vscode/
+.idea/
