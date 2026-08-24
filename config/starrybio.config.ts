@@ -1,13 +1,12 @@
 import type { StarryBioConfig } from '../src/config/schema';
 
-// This is the only file most StarryBio users need to edit. See README.md for
-// every option, provider example, and the v2-to-v3 migration table.
 const config = {
-  pageTitle: 'StarryBio v3.0',
-  favicon: 'assets/images/favicon.svg',
+  pageTitle: 'a9x',
+  favicon: 'assets/images/favicon.png',
 
+  // Preserve the v2 blue-dark appearance with v3's restored classic-blue preset.
   theme: {
-    preset: 'midnight',
+    preset: 'classic-blue',
     buttonStyle: 'glass',
     background: 'starfield',
     animationIntensity: 'normal',
@@ -26,46 +25,77 @@ const config = {
   },
 
   profile: {
-    name: 'Astronaut',
-    description: 'Exploring the Digital Universe',
-    image: 'assets/images/profile.svg',
+    name: 'a9x',
+    description: 'me and claude against the world',
+    image: 'assets/images/profile.png',
     layout: 'vertical',
   },
 
-  featured: [
-    {
-      title: 'StarryBio',
-      description: 'A self-hosted animated link-in-bio template for static-first sites.',
-      url: 'https://github.com/nota9x/StarryBio',
-      image: 'assets/images/profile.svg',
-      badge: 'Open Source',
-      icon: { simpleIcon: 'GitHub' },
-    },
-  ],
-
+  // v3 groups the former top-level links into sections and renames text to label.
   sections: [
     {
-      title: 'Socials',
-      description: 'Find me around the web.',
+      title: 'Links',
       links: [
         {
+          label: 'Discord',
+          subtitle: 'a9x.',
+          specialType: 'copy',
+          copyValue: 'a9x.',
+          icon: { simpleIcon: 'Discord' },
+        },
+        {
+          label: 'Spotify',
+          subtitle: 'a9x',
+          url: 'https://open.spotify.com/user/31mighuomasev2jc53i7od7rix5m',
+          icon: { simpleIcon: 'Spotify' },
+        },
+        {
+          label: 'YouTube',
+          subtitle: 'nota9x',
+          url: 'https://www.youtube.com/channel/UCyTZZvIwXdwMMxcQJNMkrQA',
+          icon: { simpleIcon: 'YouTube' },
+        },
+        {
+          label: 'Steam',
+          subtitle: 'nota9x',
+          url: 'https://steamcommunity.com/id/nota9x/',
+          icon: { simpleIcon: 'Steam' },
+        },
+        {
+          label: 'Instagram',
+          subtitle: 'urb.exnj',
+          url: 'https://www.instagram.com/urb.exnj/',
+          icon: { simpleIcon: 'Instagram' },
+        },
+        {
           label: 'GitHub',
-          subtitle: '@nota9x',
+          subtitle: 'nota9x',
           url: 'https://github.com/nota9x',
           icon: { simpleIcon: 'GitHub' },
         },
         {
-          label: 'Discord',
-          subtitle: 'Join the server',
-          url: 'https://discord.gg/example',
-          icon: { simpleIcon: 'Discord' },
+          label: 'Roblox',
+          subtitle: 'enic183',
+          url: 'https://roblox.com/users/460373745/profile',
+          icon: { simpleIcon: 'Roblox' },
         },
         {
-          label: 'Discord Name',
-          subtitle: 'Copy: nota9x#0000',
-          specialType: 'copy',
-          copyValue: 'nota9x#0000',
-          icon: { simpleIcon: 'Discord' },
+          label: 'Reddit',
+          subtitle: 'The1NameICanThinkOf',
+          url: 'https://www.reddit.com/user/The1NameICanThinkOf/',
+          icon: { simpleIcon: 'Reddit' },
+        },
+        {
+          label: 'Twitch',
+          subtitle: 'a9xlol',
+          url: 'https://www.twitch.tv/a9xlol',
+          icon: { simpleIcon: 'Twitch' },
+        },
+        {
+          label: 'Email',
+          subtitle: 'hey@a9x.pro',
+          url: 'mailto:hey@a9x.pro',
+          icon: 'm15.24 8.998 3.656-3.073v15.81H2.482C1.11 21.735 0 20.609 0 19.223V6.944l7.58 6.38a2.186 2.186 0 0 0 2.871-.042l4.792-4.284h-.003zm-5.456 3.538 1.809-1.616a2.438 2.438 0 0 1-1.178-.533L.905 2.395A.552.552 0 0 0 0 2.826v2.811l8.226 6.923a1.186 1.186 0 0 0 1.558-.024zM23.871 2.463a.551.551 0 0 0-.776-.068l-3.199 2.688v16.653h1.623c1.371 0 2.481-1.127 2.481-2.513V2.824a.551.551 0 0 0-.129-.36z',
         },
       ],
     },
@@ -74,54 +104,55 @@ const config = {
   status: {
     enabled: true,
     ownerTimeZone: 'America/New_York',
-    showOwnerTime: true,
+    showOwnerTime: false,
     showVisitorTime: false,
-    showNextAvailable: true,
-    responseText: 'Usually replies within a few hours',
+    showNextAvailable: false,
     default: {
-      text: 'Offline',
-      color: '#6B7280',
-      icon: 'M20 12h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0H8v2h4v-2zm-4 0H4v2h4v-2z',
+      text: 'Available',
+      color: '#23A559',
+      icon: 'assets/images/online.webp',
+      message: 'Online and available to chat!',
     },
     types: {
       available: {
         text: 'Available',
-        color: '#10B981',
+        color: '#23A559',
         icon: 'assets/images/online.webp',
-        message: 'Online and ready to chat!',
+        message: 'Online and available to chat!',
       },
       busy: {
-        text: 'Busy / School',
-        color: '#EF4444',
+        text: 'School',
+        color: '#F23F43',
         icon: 'assets/images/dnd.webp',
-        message: 'Focused on work. Replies slow.',
+        message: 'Available after 3:00 PM',
       },
       sleeping: {
         text: 'Sleeping',
-        color: '#6d7684',
-        icon: 'assets/images/idle.webp',
-        message: 'Dreaming of electric sheep.',
+        color: '#80848E',
+        icon: 'assets/images/offline.webp',
+        message: 'Will reply in the morning',
       },
     },
-    // Schedule days and times are evaluated in each visitor's local timezone.
+    // v3 evaluates these windows in each visitor's local timezone.
     schedule: [
-      { status: 'sleeping', days: 'daily', start: '05:00', end: '13:00' },
-      { status: 'busy', days: 'weekdays', start: '13:00', end: '21:00' },
-      { status: 'available', days: 'weekdays', start: '21:00', end: '05:00' },
-      { status: 'available', days: 'weekends', start: '13:00', end: '05:00' },
+      { status: 'sleeping', days: 'weekdays', start: '03:00', end: '10:45' },
+      { status: 'available', days: 'weekdays', start: '20:00', end: '03:00' },
+      { status: 'available', days: 'weekends', start: '14:00', end: '04:00' },
+      { status: 'busy', days: 'weekdays', start: '11:30', end: '19:30' },
+      { status: 'sleeping', days: 'weekends', start: '04:00', end: '13:00' },
     ],
   },
 
   announcement: {
-    enabled: true,
-    text: 'Welcome to v3.0!',
-    url: '#',
+    enabled: false,
+    text: 'Stand with us to protect kids & creators on Roblox. Click here to add your name.',
+    url: 'https://act.rokhanna.com/a/save-roblox-petition',
   },
 
   seo: {
-    title: 'StarryBio v3.0',
-    description: 'A premium animated link-in-bio template for builders and creators.',
-    image: '/assets/images/profile.svg',
+    title: 'a9x',
+    description: 'me and claude against the world',
+    image: '/assets/images/profile.png',
     canonicalUrl: 'https://a9x.pro',
     themeColor: '#7ddf9b',
   },
@@ -135,7 +166,7 @@ const config = {
 
   qr: {
     enabled: true,
-    showButton: true,
+    showButton: false,
     url: 'https://a9x.pro',
     output: 'public/qr.png',
   },
@@ -144,15 +175,8 @@ const config = {
     provider: 'none',
   },
 
-  contactCard: {
-    enabled: false,
-    output: 'public/contact.vcf',
-    name: 'Astronaut',
-    website: 'https://a9x.pro',
-  },
-
   footer: {
-    copyright: '© {year} a9x Development',
+    copyright: '© 2026 a9x Development',
   },
 } satisfies StarryBioConfig;
 
