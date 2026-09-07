@@ -110,26 +110,26 @@ const config = {
     default: {
       text: 'Available',
       color: '#23A559',
-      icon: 'assets/images/online.webp',
+      icon: 'assets/images/default/online.svg',
       message: 'Online and available to chat!',
     },
     types: {
       available: {
         text: 'Available',
         color: '#23A559',
-        icon: 'assets/images/online.webp',
+        icon: 'assets/images/default/online.svg',
         message: 'Online and available to chat!',
       },
       busy: {
         text: 'School',
         color: '#F23F43',
-        icon: 'assets/images/dnd.webp',
+        icon: 'assets/images/default/dnd.svg',
         message: 'Available after 3:00 PM',
       },
       sleeping: {
         text: 'Sleeping',
         color: '#80848E',
-        icon: 'assets/images/offline.webp',
+        icon: 'assets/images/default/offline.svg',
         message: 'Will reply in the morning',
       },
     },
@@ -160,8 +160,8 @@ const config = {
   ogImage: {
     enabled: false,
     output: 'public/og.png',
-    title: 'StarryBio v3.0',
-    subtitle: 'A premium animated link-in-bio template.',
+    title: 'StarryBio',
+    subtitle: 'Your corner of the internet.',
   },
 
   qr: {

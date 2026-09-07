@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { THEME_PRESET_NAMES, getThemePresetDefinition, type ThemePreset } from './themes';
+
 const BUTTON_STYLES = ['glass', 'solid', 'outline', 'minimal', 'terminal'] as const;
 const THEME_BACKGROUNDS = ['starfield', 'gradient', 'minimal'] as const;
 const ANIMATION_INTENSITIES = ['none', 'subtle', 'normal', 'high'] as const;
@@ -20,7 +21,7 @@ const SCHEDULE_DAYS = ['daily', 'weekdays', 'weekends'] as const;
 const HEX_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
 const GA_MEASUREMENT_ID_RE = /^G-[A-Z0-9]+$/;
-const ANALYTICS_ID_RE = /^[A-Za-z0-9_-]+$/;
+const ANALYTICS_ID_RE = /^[\w-]+$/;
 const DATA_ATTRIBUTE_RE = /^[a-z][a-z0-9-]*$/;
 const RESERVED_CUSTOM_DATA_ATTRIBUTES = new Set([
   'starrybio-provider',
@@ -344,7 +345,16 @@ export const starryBioConfigSchema = z
       .optional(),
     footer: z.object({ copyright: z.string().optional() }).strict().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((config, context) => {
+    if (config.qr?.enabled && !config.qr.url && !config.seo?.canonicalUrl) {
+      context.addIssue({
+        code: 'custom',
+        path: ['qr', 'url'],
+        message: 'is required when QR is enabled without seo.canonicalUrl',
+      });
+    }
+  });
 
 export type { ThemePreset } from './themes';
 export type ButtonStyle = (typeof BUTTON_STYLES)[number];

@@ -36,6 +36,7 @@ const qrHref =
 const contactHref = config.contactCard?.enabled
   ? toGeneratedAssetUrl(config.contactCard.output, 'public/contact.vcf')
   : '';
+const showProfileActions = Boolean(qrHref || contactHref);
 ---
 
 <div class="content-wrapper layout-shell" data-layout={config.layout.mode}>
@@ -64,28 +65,28 @@ const contactHref = config.contactCard?.enabled
         </div>
       </header>
 
-      <div class="profile-actions" aria-label="Profile actions">
-        {
-          qrHref && (
-            <a
-              href={qrHref}
-              class="mini-action mini-action-icon"
-              aria-label="Download QR code"
-              download
-              data-astro-reload
-            >
-              <QrCode size={20} aria-hidden="true" />
-            </a>
-          )
-        }
-        {
-          contactHref && (
-            <a href={contactHref} class="mini-action" download data-astro-reload>
-              Add Contact
-            </a>
-          )
-        }
-      </div>
+      {
+        showProfileActions && (
+          <div class="profile-actions" role="group" aria-label="Profile actions">
+            {qrHref && (
+              <a
+                href={qrHref}
+                class="mini-action mini-action-icon"
+                aria-label="Download QR code"
+                download
+                data-astro-reload
+              >
+                <QrCode size={20} aria-hidden="true" />
+              </a>
+            )}
+            {contactHref && (
+              <a href={contactHref} class="mini-action" download data-astro-reload>
+                Add Contact
+              </a>
+            )}
+          </div>
+        )
+      }
     </div>
 
     <div class="profile-content">
@@ -97,12 +98,12 @@ const contactHref = config.contactCard?.enabled
     <p class="footer-text">{copyright}</p>
   </main>
 
-  <p class="footer-text powered-by text-center mt-4 text-xs">
+  <p class="footer-text powered-by mt-4 text-center text-xs">
     <a
       href="https://github.com/nota9x/StarryBio"
       target="_blank"
       rel="noopener noreferrer"
-      class="hover:underline opacity-75 hover:opacity-100 transition-opacity"
+      class="hover:underline"
     >
       Powered by StarryBio v{STARRYBIO_VERSION}
     </a>
