@@ -15,7 +15,7 @@ test('renders without overflow, broken images, or serious accessibility violatio
 }) => {
   const errors = collectBrowserErrors(page);
   await page.goto('/');
-  await expect(page.locator('h1')).toHaveText('Astronaut');
+  await expect(page.locator('h1')).toHaveText('StarryBio');
   await expect(page.locator('.starfield-canvas')).toHaveCount(1);
 
   const overflow = await page.evaluate(
@@ -89,7 +89,7 @@ test('reports copy success accessibly', async ({ page, context }) => {
   const copyButton = page.locator('.copy-button-active');
   await copyButton.click();
   await expect(copyButton.locator('[data-copy-feedback]')).toHaveText('Copied!');
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('nota9x#0000');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('@nota9x');
 });
 
 test('serves the custom 404 and survives repeated transitions with one canvas', async ({
@@ -132,6 +132,7 @@ test('serves release headers, hashed assets, and generated downloads', async ({
   );
 
   const html = await home.text();
+  expect(html).toContain('http-equiv="Content-Security-Policy"');
   const assetPath = html.match(/(?:src|href)="(\/_astro\/[^"]+\.(?:css|js))"/)?.[1];
   expect(assetPath).toBeTruthy();
   const asset = await request.get(assetPath!);

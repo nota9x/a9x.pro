@@ -15,9 +15,11 @@
   },
   "include": [
     "astro.config.mjs",
+    "*.config.ts",
     "config/**/*.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
-    "src/**/*.astro"
+    "src/**/*.astro",
+    "tests/**/*.ts"
   ]
 }

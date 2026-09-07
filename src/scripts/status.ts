@@ -1,3 +1,4 @@
+import { toAbsoluteAssetPath } from '../config/image-assets';
 import { getSvgPathData, resolveIconSource } from '../config/icons';
 import type { NormalizedStatusConfig, ScheduleItem } from '../config/schema';
 
@@ -159,7 +160,7 @@ function updateStatus(config: RuntimeStatusConfig): void {
       ? `Owner: ${formatClock(new Date(), config.ownerTimeZone)}`
       : '';
   setOptionalText('#tooltip-owner-time', ownerTime);
-  document.querySelector('#tooltip-owner-time-row')?.classList.toggle('hidden', !ownerTime);
+  document.querySelector('#tooltip-owner-time-row')?.toggleAttribute('hidden', !ownerTime);
 
   const visitorTime = config.showVisitorTime ? `Your time: ${formatClock(new Date())}` : '';
   setOptionalText('#tooltip-visitor-time', visitorTime);
@@ -268,16 +269,18 @@ function setMaskedIcon(element: HTMLElement, source: string, color: string): voi
     ? `data:image/svg+xml;base64,${btoa(
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${pathData}"/></svg>`
       )}`
-    : toAbsoluteUrl(source);
-  element.style.backgroundColor = color;
+    : '';
+  const artworkUrl = pathData ? '' : toAbsoluteUrl(source);
+  element.classList.toggle('status-icon-artwork', Boolean(artworkUrl));
+  element.style.backgroundColor = artworkUrl ? 'transparent' : color;
+  element.style.backgroundImage = artworkUrl ? `url('${cssEscapeUrl(artworkUrl)}')` : 'none';
   const maskImage = iconUrl ? `url('${cssEscapeUrl(iconUrl)}')` : 'none';
   element.style.setProperty('-webkit-mask-image', maskImage);
   element.style.maskImage = maskImage;
 }
 
 function toAbsoluteUrl(value: string): string {
-  if (!value || /^(?:data:|https?:|\/)/i.test(value)) return value;
-  return `/${value}`;
+  return toAbsoluteAssetPath(value);
 }
 
 function cssEscapeUrl(value: string): string {

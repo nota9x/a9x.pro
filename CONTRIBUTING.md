@@ -1,6 +1,6 @@
 # Contributing to StarryBio
 
-Thanks for contributing to StarryBio. The project is a configurable Astro link-in-bio site that builds to static assets and deploys through Cloudflare Workers. Contributions that improve the starter configuration, site experience, accessibility, reliability, themes, layouts, or integrations are welcome.
+Thanks for contributing to StarryBio. The project is a configurable Astro link-in-bio site that builds to portable static assets and supports GitHub Pages, Cloudflare Workers, Vercel, and Netlify. Contributions that improve the starter configuration, site experience, accessibility, reliability, themes, layouts, or integrations are welcome.
 
 ## Reporting issues
 
@@ -18,9 +18,9 @@ For a security vulnerability, use [private vulnerability reporting](https://gith
 
 ### Requirements
 
-- Node.js 24 or later
-- pnpm 11.23.0 or later
-- A Cloudflare account only when you need to deploy
+- Node.js 24.x or 26.0.0+ (`.node-version` selects 24.x for provider builds)
+- pnpm 12.3.4
+- A hosting-provider account only when you need to deploy
 
 Fork the repository, clone your fork, and create a focused branch. Use a descriptive branch name such as `fix/status-timezone` or `feat/solarized-theme`.
 
@@ -33,20 +33,26 @@ pnpm dev
 
 ## Project structure
 
-| Path                                                       | Purpose                                                                                                                |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| [`config/starrybio.config.ts`](config/starrybio.config.ts) | Complete starter configuration for profile data, links, themes, layouts, status, generated assets, and analytics.      |
-| [`src/config/schema.ts`](src/config/schema.ts)             | Zod schema and TypeScript types for the public configuration contract. Update this when adding a configuration option. |
-| [`src/config/themes.ts`](src/config/themes.ts)             | Built-in theme tokens and logic that turns a selected preset into CSS custom properties.                               |
-| [`src/styles/`](src/styles)                                | Theme, layout, component, motion, and input styles.                                                                    |
-| [`src/components/`](src/components)                        | Reusable Astro UI components, including profile, links, featured cards, SEO, status, and analytics.                    |
-| [`src/pages/`](src/pages)                                  | The homepage and static 404 page.                                                                                      |
-| [`src/scripts/`](src/scripts)                              | Browser-side behavior for links, status, and the starfield.                                                            |
-| [`src/config/analytics.ts`](src/config/analytics.ts)       | Analytics script descriptors and safe data-attribute generation.                                                       |
-| [`scripts/`](scripts)                                      | Build-time validation, asset generation, live config updates, and Simple Icons generation.                             |
-| [`public/`](public)                                        | Static assets and Cloudflare headers. Place user-facing local images here.                                             |
-| [`public/_headers`](public/_headers)                       | Content Security Policy and other static deployment headers.                                                           |
-| [`tests/unit/`](tests/unit) and [`tests/e2e/`](tests/e2e)  | Vitest unit tests and Playwright release checks.                                                                       |
+| Path                                                                                     | Purpose                                                                                                                |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [`config/starrybio.config.ts`](config/starrybio.config.ts)                               | Complete starter configuration for profile data, links, themes, layouts, status, generated assets, and analytics.      |
+| [`src/config/schema.ts`](src/config/schema.ts)                                           | Zod schema and TypeScript types for the public configuration contract. Update this when adding a configuration option. |
+| [`src/config/themes.ts`](src/config/themes.ts)                                           | Built-in theme tokens and logic that turns a selected preset into CSS custom properties.                               |
+| [`src/styles/`](src/styles)                                                              | Theme, layout, component, motion, and input styles.                                                                    |
+| [`src/components/`](src/components)                                                      | Reusable Astro UI components, including profile, links, featured cards, SEO, status, and analytics.                    |
+| [`src/pages/`](src/pages)                                                                | The homepage and static 404 page.                                                                                      |
+| [`src/scripts/`](src/scripts)                                                            | Browser-side behavior for links, status, and the starfield.                                                            |
+| [`src/config/analytics.ts`](src/config/analytics.ts)                                     | Analytics script descriptors and safe data-attribute generation.                                                       |
+| [`scripts/`](scripts)                                                                    | Build-time validation, asset generation, live config updates, and Simple Icons generation.                             |
+| [`public/`](public)                                                                      | Static assets and Cloudflare/Netlify headers. Place user-facing local images here.                                     |
+| [`public/_headers`](public/_headers)                                                     | Canonical Content Security Policy and static header intent for Cloudflare and Netlify.                                 |
+| [`vercel.json`](vercel.json)                                                             | Vercel build/output settings and its translation of the shared header intent.                                          |
+| [`netlify.toml`](netlify.toml)                                                           | Netlify build and publish settings.                                                                                    |
+| [`wrangler.jsonc`](wrangler.jsonc)                                                       | Cloudflare static-assets deployment and custom 404 handling.                                                           |
+| [`.github/workflows/deploy-github-pages.yml`](.github/workflows/deploy-github-pages.yml) | GitHub Pages build, artifact upload, and deployment workflow.                                                          |
+| [`tests/unit/`](tests/unit) and [`tests/e2e/`](tests/e2e)                                | Vitest unit tests and Playwright release checks.                                                                       |
+
+Prefer compact SVG source artwork for simple interface graphics and status icons. Keep raster formats for photographic or texture-rich imagery that would lose quality or become excessively complex as vectors; never embed raster data inside an SVG.
 
 ## Themes, layouts, and visuals
 
@@ -67,7 +73,7 @@ When adding or changing a provider:
 
 - Use external HTTPS scripts and data attributes; do not add inline initialization code.
 - Add validation and tests for all new configuration fields.
-- Update [`public/_headers`](public/_headers) with the provider’s script and collection hosts, keeping the Content Security Policy as narrow as possible.
+- Update the provider-specific origins in [`src/config/security-headers.ts`](src/config/security-headers.ts), then run `pnpm headers`. The generated Cloudflare/Netlify and Vercel policies stay narrow and the validation step rejects stale copies.
 - Document the provider and a placeholder-only configuration example in [README.md](README.md).
 - Never commit real site IDs, tokens, credentials, or analytics data.
 
@@ -76,10 +82,7 @@ When adding or changing a provider:
 Run the checks appropriate to your change before opening a pull request:
 
 ```bash
-pnpm format:check
-pnpm lint
-pnpm typecheck
-pnpm test:unit
+pnpm check
 pnpm build
 ```
 
@@ -89,7 +92,7 @@ For changes affecting the rendered site, also run:
 pnpm test:e2e
 ```
 
-`pnpm release:check` runs the complete local release gate, including formatting, linting, type checks, unit tests, a production build, browser tests, and a production dependency audit. Use `pnpm preview` to exercise the built static output through Wrangler before deployment.
+`pnpm check` is the fast local quality gate: formatting, typed linting, type checks, and unit tests. `pnpm release:check` adds a production build, browser tests, and a production dependency audit. Use `pnpm preview` for a provider-neutral static preview, or `pnpm preview:cloudflare` to exercise the output through Wrangler.
 
 If you change the config schema, generated assets, status scheduling, or runtime behavior, add or update focused tests. For visual work, check narrow and wide viewports, keyboard navigation, and reduced-motion behavior.
 
@@ -102,7 +105,82 @@ If you change the config schema, generated assets, status scheduling, or runtime
 5. Add screenshots or a recording for visual changes, including new themes and layouts.
 6. Link the issue with `Closes #<number>` when applicable, then submit the pull request against the default branch.
 
-Write clear commit and pull request titles that describe the outcome, for example `fix: preserve overnight status schedules` or `feat: add aurora theme preset`.
+### Pull request titles
+
+Pull request titles must use [Conventional Commits](https://www.conventionalcommits.org/) syntax. A type is required, a scope is optional, and the description follows a colon:
+
+```text
+feat(deploy): add Vercel support
+fix(ui): correct mobile card spacing
+docs(readme): improve installation instructions
+```
+
+StarryBio uses squash merging, so the pull request title becomes the meaningful commit on `main` and drives release notes and version selection. CI accepts `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, and `test`. Renovate's `chore(deps): ...` titles follow the same convention.
+
+### Commit messages
+
+Every commit introduced by a pull request is checked with commitlint and should follow the same convention:
+
+```text
+feat: add dark mode
+fix(ui): correct mobile spacing
+perf(assets): optimize generated icons
+docs: improve installation instructions
+```
+
+Mark a breaking change with `!`:
+
+```text
+feat(config)!: redesign configuration format
+```
+
+Alternatively, describe it in a `BREAKING CHANGE:` footer in the commit body. Validate the latest local commit before pushing with:
+
+```bash
+pnpm commitlint
+```
+
+CI validates all commits in each pull request. Amend or reword invalid commits before merging. The final squash commit is derived from the separately validated pull request title.
+
+## Releases
+
+Release Please manages versions, `CHANGELOG.md`, Git tags, and GitHub Releases from the Conventional Commits on `main`:
+
+```text
+PR merged into main
+        ↓
+Release Please analyzes commits
+        ↓
+Release PR is created/updated
+        ↓
+Maintainer reviews release
+        ↓
+Release PR merged
+        ↓
+vX.Y.Z tag + GitHub Release
+```
+
+Ordinary pull request merges do not immediately publish releases. They update the pending release pull request; merging that release pull request is the manual release gate.
+
+Version changes follow Semantic Versioning:
+
+- Patch releases contain fixes and small compatible improvements (`fix:` and `perf:`).
+- Minor releases contain backward-compatible features (`feat:`).
+- Major releases contain breaking changes (`!` or a `BREAKING CHANGE:` footer).
+
+Other types normally do not independently trigger a release. Use GitHub milestones such as `v3.4`, `v3.5`, or `v4.0` to plan feature releases. Routine patch releases do not need a milestone.
+
+### Maintainer repository setup
+
+The following settings are manual GitHub repository configuration, not repository files:
+
+- Under **Settings → General → Pull Requests**, enable squash merging and select the pull request title as the default squash commit title.
+- Disable merge commits. Disable rebase merging as well if the project wants a strictly linear conventional history.
+- Enable automatic deletion of head branches after merge.
+- Protect `main`: require pull requests and require the `Release validation` and `Validate PR title` checks before merging.
+- Create a fine-grained token for `nota9x/StarryBio` with repository **Contents**, **Pull requests**, and **Issues** read/write access, save it as the Actions secret `RELEASE_PLEASE_TOKEN`, and ensure the token's owner can open pull requests. Release Please needs this separate token so its release pull requests trigger the normal CI workflow; GitHub suppresses workflow events created by the built-in `GITHUB_TOKEN`.
+
+To publish, review the version and changelog in the Release Please pull request, wait for its required checks, and squash-merge it. Release Please then creates the matching `vX.Y.Z` tag and GitHub Release. There is no npm publication step.
 
 ## Code of Conduct
 
