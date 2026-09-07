@@ -110,26 +110,26 @@ const config = {
     default: {
       text: 'Available',
       color: '#23A559',
-      icon: 'assets/images/online.svg',
+      icon: 'assets/images/default/online.svg',
       message: 'Online and available to chat!',
     },
     types: {
       available: {
         text: 'Available',
         color: '#23A559',
-        icon: 'assets/images/online.svg',
+        icon: 'assets/images/default/online.svg',
         message: 'Online and available to chat!',
       },
       busy: {
         text: 'School',
         color: '#F23F43',
-        icon: 'assets/images/dnd.svg',
+        icon: 'assets/images/default/dnd.svg',
         message: 'Available after 3:00 PM',
       },
       sleeping: {
         text: 'Sleeping',
         color: '#80848E',
-        icon: 'assets/images/offline.svg',
+        icon: 'assets/images/default/offline.svg',
         message: 'Will reply in the morning',
       },
     },

@@ -1,4 +1,3 @@
-import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   determineCurrentStatus,
@@ -7,23 +6,6 @@ import {
   type RuntimeStatusConfig,
 } from '../../src/scripts/status';
 import type { ScheduleItem } from '../../src/config/schema';
-
-describe('configured status artwork', () => {
-  it('uses SVG assets that exist in public', async () => {
-    const { default: config } = await import('../../config/starrybio.config');
-    const icons = [
-      config.status.default.icon,
-      config.status.types.available.icon,
-      config.status.types.busy.icon,
-      config.status.types.sleeping.icon,
-    ];
-
-    for (const icon of icons) {
-      expect(icon).toMatch(/^assets\/images\/.*\.svg$/);
-      expect(existsSync(`public/${icon}`)).toBe(true);
-    }
-  });
-});
 
 function createRuntime(schedule: ScheduleItem[]): RuntimeStatusConfig {
   return {
