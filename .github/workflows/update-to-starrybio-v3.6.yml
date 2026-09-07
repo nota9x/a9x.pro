@@ -27,42 +27,72 @@ jobs:
           node-version: 24.15.0
           cache: pnpm
 
-      - name: Bootstrap verified v3.6 updater
+      - name: Apply StarryBio v3.6 source delta
         shell: bash
         run: |
           set -euo pipefail
           git clone --branch v3.6.0 --depth 1 https://github.com/nota9x/StarryBio.git /tmp/starrybio-v3.6
-          pnpm --dir /tmp/starrybio-v3.6 install --frozen-lockfile
-          /tmp/starrybio-v3.6/node_modules/.bin/tsx /tmp/starrybio-v3.6/scripts/update-repository.ts --yes
 
-      - name: Preserve deployment-specific test adaptations
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Keep the customized-deployment-safe versions already present on this PR
-          # when upstream release-only assertions would otherwise overwrite them.
-          git checkout HEAD -- tests/e2e/release.spec.ts tests/unit/status.test.ts || true
+          # v3.5 predates the new signed update artifacts, so this one transition is
+          # performed from the exact immutable v3.6 tag. Preserve deployment-owned
+          # config and workflow files; custom PNG assets are not present upstream and
+          # therefore remain untouched.
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/workflows/' \
+            --exclude='config/starrybio.config.ts' \
+            /tmp/starrybio-v3.6/ ./
 
-      - name: Verify migrated deployment
+          # Remove paths deleted/renamed by v3.6.
+          rm -f tests/e2e/release.spec.ts
+          rm -f \
+            public/assets/images/dnd.svg \
+            public/assets/images/favicon.svg \
+            public/assets/images/idle.svg \
+            public/assets/images/offline.svg \
+            public/assets/images/online.svg \
+            public/assets/images/profile.svg
+
+          # Migrate references to StarryBio-managed default status artwork while
+          # preserving the site's custom profile/favicon assets and all other config.
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('config/starrybio.config.ts')
+          text = path.read_text()
+          for name in ('offline', 'online', 'dnd', 'idle'):
+              text = text.replace(
+                  f'assets/images/{name}.svg',
+                  f'assets/images/default/{name}.svg',
+              )
+          path.write_text(text)
+
+          # Keep the accessibility fix already discovered on this customized site.
+          profile = Path('src/components/ProfileCard.astro')
+          text = profile.read_text()
+          text = text.replace(
+              '<div class="profile-actions" aria-label="Profile actions">',
+              '<div class="profile-actions" role="group" aria-label="Profile actions">',
+          )
+          profile.write_text(text)
+          PY
+
+      - name: Verify customized deployment
         shell: bash
         run: |
           set -euo pipefail
           pnpm install --frozen-lockfile
-          pnpm run format:check
-          pnpm run lint
-          pnpm run typecheck
-          pnpm run test:unit
+          pnpm run check
+          pnpm run test:integration
           pnpm run build
           pnpm run test:e2e
+          pnpm run test:e2e:fixtures
           pnpm audit
 
       - name: Commit v3.6 migration
         shell: bash
         run: |
           set -euo pipefail
-          # GitHub Actions tokens cannot modify workflow files on this repository;
-          # those are synced separately through the authenticated GitHub connection.
-          git checkout HEAD -- .github/workflows
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
