@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import config from '../../config/starrybio.config';
 
 function collectBrowserErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -15,7 +16,7 @@ test('renders without overflow, broken images, or serious accessibility violatio
 }) => {
   const errors = collectBrowserErrors(page);
   await page.goto('/');
-  await expect(page.locator('h1')).toHaveText('StarryBio');
+  await expect(page.locator('h1')).toHaveText(config.profile.name);
   await expect(page.locator('.starfield-canvas')).toHaveCount(1);
 
   const overflow = await page.evaluate(
@@ -68,6 +69,8 @@ test('supports keyboard tooltip and native dialog focus, Escape, and backdrop di
 });
 
 test('keys announcement dismissal to its content', async ({ page, context }) => {
+  test.skip(!config.announcement.enabled, 'Announcement is disabled in this deployment config.');
+
   await context.addCookies([
     {
       name: 'starrybioAnnouncement',
@@ -84,12 +87,20 @@ test('keys announcement dismissal to its content', async ({ page, context }) => 
 });
 
 test('reports copy success accessibly', async ({ page, context }) => {
+  const copyLink = config.sections
+    .flatMap((section) => section.links)
+    .find((link) => 'specialType' in link && link.specialType === 'copy');
+  expect(copyLink).toBeDefined();
+  expect(copyLink && 'copyValue' in copyLink ? copyLink.copyValue : undefined).toBeTruthy();
+
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');
   const copyButton = page.locator('.copy-button-active');
   await copyButton.click();
   await expect(copyButton.locator('[data-copy-feedback]')).toHaveText('Copied!');
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('@nota9x');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    copyLink && 'copyValue' in copyLink ? copyLink.copyValue : undefined
+  );
 });
 
 test('serves the custom 404 and survives repeated transitions with one canvas', async ({
@@ -112,10 +123,13 @@ test('honors reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.locator('.shooting-star')).toHaveCount(0);
-  const duration = await page
-    .locator('#announcement-banner')
-    .evaluate((element) => getComputedStyle(element).animationDuration);
-  expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001);
+
+  if (config.announcement.enabled) {
+    const duration = await page
+      .locator('#announcement-banner')
+      .evaluate((element) => getComputedStyle(element).animationDuration);
+    expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001);
+  }
 });
 
 test('serves release headers, hashed assets, and generated downloads', async ({
