@@ -104,7 +104,7 @@ const config = {
   status: {
     enabled: true,
     ownerTimeZone: 'America/New_York',
-    showOwnerTime: false,
+    showOwnerTime: true,
     showVisitorTime: false,
     showNextAvailable: false,
     default: {
